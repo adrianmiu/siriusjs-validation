@@ -1,18 +1,16 @@
 #SiriusJS Validation
 
-[![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/siriusjs/validation)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/siriusjs/validation/blob/master/LICENSE)
+[![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation/blob/master/LICENSE)
 [![Build Status](https://img.shields.io/travis/siriusjs/validation/master.svg?style=flat-square)](https://travis-ci.org/siriusjs/validation)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/siriusjs/validation.svg?style=flat-square)](https://scrutinizer-ci.com/g/siriusjs/validation/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/siriusjs/validation.svg?style=flat-square)](https://scrutinizer-ci.com/g/siriusjs/validation)
-[![Total Downloads](https://img.shields.io/packagist/dt/siriusjs/validation.svg?style=flat-square)](https://packagist.org/packages/siriusjs/validation)
-
 Sirius Validation is a pure-JS library for data validation in Node and browsers. It offers:
 
-1. [21 build-in validation rules](validation_rules.md). There are validators for strings, array, numbers, emails, URLs
-2. Deeply-nested validation rules.
-3. Asynchronous validation rules.
+1. [23 build-in validation rules](validation_rules.md). There are validators for strings, array, numbers, emails, URLs
+2. Ability to validate deep objects
+3. Asynchronous validation support
 4. Referenced validation rules. Validation rules may have parameters which can be value or references to other paths
+5. 98% code coverage
+6. 11kb minified (4kb gziped)
 
 ##Elevator pitch
 
@@ -72,8 +70,16 @@ let validator = SiriusValidation.build(rules, change_handler, error_handler, mes
 
 #### 2. Pass data to the validator
 
+This has to be done depending on the tools you are using. Maybe you need to intercept browser events, set watchers in your framework of choice etc
+
 ```javascript
 validator.set('addresses[0][city]', 'New');
+
+// or you can set an object
+validator.set('addresses[0]', {city: 'New'}, true); // 3rd argument skips validation
+
+// or you can set everything at once (eg: you loaded data from API)
+validator.setData(obj, true, true); // 2nd argument skip validation and reset the form (error messages, touched fields etc)
 
 /**
  * At this point the change event is triggered and the `change_handler` should be able to make changes to the application. Here's an example of a handler
@@ -90,6 +96,22 @@ function change_handler(type, path) {
     }
   }
 }
+```
+
+#### 3. Submit form
+
+```javascript
+
+function submit() {
+  validator.validate().then(function(isValid) {
+    if (isValid) {
+      // send data to the server
+    }
+  }).then(function(response) {
+    // maybe set server-side validation errors, show success message etc
+  });
+}
+
 ```
 
 ## Why this style? 
