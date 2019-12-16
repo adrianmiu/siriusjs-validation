@@ -1,0 +1,171 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Sirius Validation - jQuery example</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous"/>
+
+  <style>
+    .form-group.has-error label {
+      font-weight: bold;
+      color: #c00;
+    }
+
+    .form-group .error-message {
+      color: #c00;
+    }
+    .form-group.is-pending .form-control {
+      font-style: italic;
+      color: #ccc;
+      background: #333;
+    }
+  </style>
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+<!--[if IE]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
+  your browser</a> to improve your experience and security.</p>
+<![endif]-->
+
+
+<div class="container mt-4">
+  <h1 class="mb-4">Sirius Validation - jQuery example</h1>
+
+  <div class="alert alert-warning">This example contains a simple plugin that is not production ready. You will have to extend it for your own purposes.</div>
+
+  <form action="">
+
+    <div class="form-group row">
+      <label for="username" class="col-md-3">Username</label>
+      <div class="col-md-9">
+        <input type="text" name="username" id="username" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="password" class="col-md-3">Password</label>
+      <div class="col-md-9">
+        <input type="password" name="password" id="password" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="password_confirmation" class="col-md-3">Confirm password</label>
+      <div class="col-md-9">
+        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </form>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
+<script src="../dist/validator.js"></script>
+
+
+<script>
+
+  (function ($) {
+    $.fn.validator = function (rules, messages, on_validation, on_pending, on_success) {
+      var el = this[0];
+      if (el.nodeName.toLowerCase() != 'form') {
+        return;
+      }
+
+      var self = el;
+      var $el = $(el);
+      var on_change = function (type, path) {
+        if (type === 'validation') {
+          on_validation(path, validator.getError(path));
+        }
+        if (type === 'state') {
+          on_pending(path, validator.isPending(path));
+        }
+      };
+      var validator = SiriusValidation.build(rules, on_change, null, messages);
+      $el.data('__sirius_validator__', validator);
+
+
+      $el.on('change input', ':input', function (e) {
+        var $el = $(this);
+        var path = $el.attr('name');
+
+        if (e.type == 'change') {
+          validator.set(path, $el.val());
+        } else if (e.type == 'input' && validator.isDirty(path)) {
+          validator.set(path, $el.val());
+        }
+      });
+
+      $el.on('submit', function (e) {
+        e.preventDefault();
+        validator.validate().then(function (result) {
+          if (result === true) {
+            on_success.call(self, validator);
+          }
+        });
+      });
+
+    };
+  })(jQuery);
+
+  $(function () {
+    var show_error = function (path, error) {
+      var $parent = $('[name="' + path + '"]').parents('.form-group');
+      $parent.find('.error-message').remove();
+      if (error) {
+        $parent.addClass('has-error');
+        $parent.append('<div class="error-message col-md-12">' + error + '</div>')
+      } else {
+        $parent.removeClass('has-error');
+      }
+    };
+
+    var show_pending = function (path, isPending) {
+      var $parent = $('[name="' + path + '"]').parents('.form-group');
+      console.log($parent, path, isPending);
+      if (isPending) {
+        $parent.addClass('is-pending');
+      } else {
+        $parent.removeClass('is-pending');
+      }
+    };
+
+    SiriusValidation.add_rule('unique_username', function() {
+      return {
+        validate: function(value) {
+          return new Promise(function(resolve) {
+            setTimeout(function() {
+              resolve(value.length % 2 === 1);
+            }, 1000);
+          });
+        }
+      }
+    });
+
+    $('form').validator({
+      'username': 'required | min_length(6) | unique_username',
+      'password': 'required | min_length(6)',
+      'password_confirmation': 'required | min_length(6) | equal("@password")',
+    }, {
+      'username:unique_username': 'Username is taken',
+      'password_confirmation:equal': 'Passwords must match'
+    }, show_error, show_pending, function () {
+      alert('SUCCESS: Form is valid!')
+    });
+  });
+</script>
+
+</body>
+
+</html>

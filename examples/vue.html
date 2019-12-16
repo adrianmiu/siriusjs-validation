@@ -1,0 +1,136 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Sirius Validation - Vue.js example</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous"/>
+
+  <style>
+    .form-group.has-error label {
+      font-weight: bold;
+      color: #c00;
+    }
+
+    .form-group .error-message {
+      color: #c00;
+    }
+    .form-group.is-pending .form-control {
+      font-style: italic;
+      color: #ccc;
+      background: #333;
+    }
+  </style>
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+<!--[if IE]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade
+  your browser</a> to improve your experience and security.</p>
+<![endif]-->
+
+
+<div id="app" class="container mt-4">
+  <h1 class="mb-4">Sirius Validation - Vue.js example</h1>
+
+  <form action="" @submit="submit">
+
+    <div class="form-group row" :class="{'has-error': $v.hasError('username'), 'is-pending': $v.isPending('username')}">
+      <label for="username" class="col-md-3">Username</label>
+      <div class="col-md-9">
+        <input type="text" name="username" id="username" class="form-control" @input="handleInputChange"  @change="handleInputChange">
+      </div>
+      <div class="error-message col-md-12" v-show="$v.hasError('username')">{{$v.getError('username')}}</div>
+    </div>
+
+    <div class="form-group row" :class="{'has-error': $v.hasError('password'), 'is-pending': $v.isPending('password')}">
+      <label for="password" class="col-md-3">Password</label>
+      <div class="col-md-9">
+        <input type="password" name="password" id="password" class="form-control" @input="handleInputChange"  @change="handleInputChange">
+      </div>
+      <div class="error-message col-md-12" v-show="$v.hasError('password')">{{$v.getError('password')}}</div>
+    </div>
+
+    <div class="form-group row" :class="{'has-error': $v.hasError('password_confirmation'), 'is-pending': $v.isPending('password_confirmation')}">
+      <label for="password_confirmation" class="col-md-3">Confirm password</label>
+      <div class="col-md-9">
+        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" @input="handleInputChange"  @change="handleInputChange">
+      </div>
+      <div class="error-message col-md-12" v-show="$v.hasError('password_confirmation')">{{$v.getError('password_confirmation')}}</div>
+    </div>
+
+    <button class="btn btn-primary" type="submit" :disabled="$v.isPending()">Submit</button>
+  </form>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../dist/validator.js"></script>
+
+
+<script>
+
+  SiriusValidation.add_rule('unique_username', function() {
+    return {
+      validate: function(value) {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            resolve(value.length % 2 === 1);
+          }, 1000);
+        });
+      }
+    }
+  });
+
+  var app = new Vue({
+    el: '#app',
+    data: function() {
+      return {
+        formData: {},
+        $v: {},
+      };
+    },
+    methods: {
+      handleInputChange: function(e) {
+        var path = e.target.getAttribute('name');
+        var should_validate = e.type == 'change' || (e.type == 'input' && this.$v.isDirty(path));
+        if (should_validate) {
+          this.$v.set(path, e.target.value);
+        }
+      },
+      submit: function(e) {
+        var self = this;
+        e.preventDefault();
+        this.$v.validate().then(function() {
+          if (self.$v.isValid()) {
+            alert('SUCCESS: Form is valid!');
+          } else {
+            alert('ERROR: Form is not valid!');
+          }
+        });
+      }
+    },
+    beforeMount: function() {
+      var self = this;
+      this.$v = SiriusValidation.build({
+        'username': 'required | min_length(6) | unique_username',
+        'password': 'required | min_length(6)',
+        'password_confirmation': 'required | min_length(6) | equal("@password")',
+      }, function() { self.$forceUpdate() }, null, {
+        'username:unique_username': 'Username is taken',
+        'password_confirmation:equal': 'Passwords must match'
+      });
+
+    }
+  })
+</script>
+
+</body>
+
+</html>
