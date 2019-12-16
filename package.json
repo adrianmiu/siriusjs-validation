@@ -1,6 +1,6 @@
 {
-  "name": "sirius-validation",
-  "version": "1.0.0",
+  "name": "siriusjs-validation",
+  "version": "0.1.0",
   "description": "Advanced validation library for browsers and Node. Designed to handle complex validation scenarios and integrate with any UI library like Vue, React etc",
   "main": "index.js",
   "scripts": {
@@ -25,9 +25,13 @@
   "author": "Adrian Miu",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/siriusjs/validation/issues"
+    "url": "https://github.com/adrianmiu/siriusjs-validation/issues"
   },
-  "homepage": "https://github.com/siriusjs/validation#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianmiu/siriusjs-validation"
+  },
+  "homepage": "https://www.sirius.ro/siriusjs/validation",
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/preset-env": "^7.7.6",
