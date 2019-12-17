@@ -1,4 +1,4 @@
-#SiriusJS Validation
+# SiriusJS Validation
 
 [![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/siriusjs/validation)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/siriusjs/validation/blob/master/LICENSE)
@@ -112,7 +112,7 @@ function change_handler(type, path) {
 
 ## Links
 
-- [documentation](http://sirius.ro/siriusjs/validation/)
+- [documentation](http://sirius.ro/javascript/validation/)
 - [changelog](CHANGELOG.md)
 
 

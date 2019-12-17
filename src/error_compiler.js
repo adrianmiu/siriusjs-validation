@@ -3,10 +3,12 @@ import get_target_value from './utils/get_target_value'
 
 export default function(validator, path, failed_rule_selector, failed_rule_name, messages) {
   messages = messages || default_messages;
-  let value = validator.get(path);
   let params = validator.$rules[failed_rule_selector][failed_rule_name].params || {};
   let computed_params = {};
 
+  /**
+   * Compute the values of the params since they will be replaced in the message templates
+   */
   Object.keys(params).forEach(function(param) {
     computed_params[params] = get_target_value(validator.data, path, params[param]);
   });
@@ -15,8 +17,6 @@ export default function(validator, path, failed_rule_selector, failed_rule_name,
   /**
    * The potential messages contain keys from the `messages` variable that may be used to generate the error message
    * The first one that is found is used
-   *
-   * @type {*[]}
    */
   let potential_messages = [
     path + ':' + failed_rule_name,
@@ -28,17 +28,18 @@ export default function(validator, path, failed_rule_selector, failed_rule_name,
     return messages[msg];
   });
 
-  let message = matched_message ? messages[matched_message] : false;
+  let error = matched_message ? messages[matched_message] : false;
 
-  if (typeof message === "function") {
-    return message(validator, path, failed_rule_selector);
+  if (typeof error === "function") {
+    return error(validator, path, failed_rule_selector);
   }
 
-  if (message) {
+  if (error) {
+    // replace placeholders with actual parameter values
     Object.keys(params).forEach(function(p) {
-      message = message.replace(new RegExp('\{'+p+'\}', 'g'), get_target_value(validator.getData(), path, params[p]));
+      error = error.replace(new RegExp('\{'+p+'\}', 'g'), get_target_value(validator.getData(), path, params[p]));
     });
-    return message;
+    return error;
   }
 
   return messages._default || 'Field is not valid';

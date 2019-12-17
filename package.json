@@ -31,7 +31,7 @@
     "type": "git",
     "url": "https://github.com/adrianmiu/siriusjs-validation"
   },
-  "homepage": "https://www.sirius.ro/siriusjs/validation",
+  "homepage": "https://www.sirius.ro/javascript/validation",
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/preset-env": "^7.7.6",

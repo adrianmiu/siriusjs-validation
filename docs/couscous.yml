@@ -42,38 +42,20 @@ menu:
                     text: Installation
                     relativeUrl: installation.html
                 simple_example:
-                    text: Simple example
-                    relativeUrl: simple_example.html
+                    text: Full example
+                    relativeUrl: full_example.html
                 validators:
                     text: Built-in rules
                     relativeUrl: validation_rules.html
-                validator:
-                    text: Validator object
-                    relativeUrl: validator.html
         advanced:
-            name: Advanced topics
+            name: How to...
             items:
-                rule_factory:
-                    text: The rule factory
-                    relativeUrl: rule_factory.html
-                error_message:
-                    text: The error message
-                    relativeUrl: error_message.html
-                validation_rule:
-                    text: The anatomy of a validation rule
-                    relativeUrl: rule_anatomy.html
-                validation_context:
-                    text: The validation context
-                    relativeUrl: validation_context.html
-        cookbook:
-            name: Cookbook
-            items:
-                complex_validator:
-                    text: Complex validators
-                    relativeUrl: complex_validators.html
-                custome_rule:
-                    text: Custom validation rule
-                    relativeUrl: custom_rule.html
+                custom_validation_rule:
+                    text: Create a custom validation rule
+                    relativeUrl: custom_validation_rule.html
+                async_validation_rule:
+                    text: Create an async validation rule
+                    relativeUrl: async_validation_rule.html
                 translate_messages:
-                    text: Translating the error messages
+                    text: Translate error messages
                     relativeUrl: translate_messages.html
