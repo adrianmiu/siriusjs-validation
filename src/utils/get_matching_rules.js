@@ -1,5 +1,15 @@
 import is_path_matching_selector from './is_path_matching_selector'
 
+/**
+ * Returns the rules that match a particular path ordered by specificity
+ * A validator may contain more than 1 selector that matches a path and this function
+ * finds all the selectors that match a path and orders them by priority so that,
+ * when the validation is performed, the validators are executed in a proper order
+ * 
+ * @param path
+ * @param rules
+ * @returns {*}
+ */
 export default function (path, rules) {
   let matching_selectors = Object.keys(rules).filter(function (selector) {
     return is_path_matching_selector(path, selector);

@@ -1,18 +1,17 @@
 # SiriusJS Validation
 
-[![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/siriusjs/validation)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/siriusjs/validation/blob/master/LICENSE)
-[![Build Status](https://img.shields.io/travis/siriusjs/validation/master.svg?style=flat-square)](https://travis-ci.org/siriusjs/validation)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/siriusjs/validation.svg?style=flat-square)](https://scrutinizer-ci.com/g/siriusjs/validation/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/siriusjs/validation.svg?style=flat-square)](https://scrutinizer-ci.com/g/siriusjs/validation)
-[![Total Downloads](https://img.shields.io/packagist/dt/siriusjs/validation.svg?style=flat-square)](https://packagist.org/packages/siriusjs/validation)
+[![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation/blob/master/LICENSE)
+[![Build Status](https://img.shields.io/travis/adrianmiu/siriusjs-validation/master.svg?style=flat-square)](https://travis-ci.org/siriusjs/validation)
 
-Sirius Validation is a pure-JS library for data validation in Node and browsers. It offers:
+Sirius Validation is stand-alone JS library for data validation in Node and browsers. It offers:
 
-1. [21 build-in validation rules](validation_rules.md). There are validators for strings, array, numbers, emails, URLs
-2. Deeply-nested validation rules.
-3. Asynchronous validation rules.
+1. [23 build-in validation rules](validation_rules.md). There are validators for strings, array, numbers, emails, URLs
+2. Ability to validate deep objects
+3. Asynchronous validation support
 4. Referenced validation rules. Validation rules may have parameters which can be value or references to other paths
+5. 98% code coverage
+6. 11kb minified (4kb gziped)
 
 ##Elevator pitch
 
@@ -40,27 +39,34 @@ let rules = {
 };
 
 /**
- * do something when the validation is performed on a path
- * - type is `validation`
- * - path can be something like `addresses[0][city]`
- * 
- * or
- * 
- * when async validation starts/finishes
- * - type is `state`
- * - path can be something like `username` if you are checking if the username is available
+ * A callback to handle changes to the validation status of a path or, 
+ * in case of async validator, changes to the state of a path
  */
-let change_handler = (type, path) => {};
+function change_handler (type, path) {
+  // type is `validation` (when the validation status for a path to a value is set) 
+  // or `state` (when doing async validation a path can have a "pending" state
+  
+  // `this` is bound to the validator
+  if (type === 'validation') {
+      if (this.hasError(path)) {
+        console.log(path, this.getError(path));
+        // here you can inject the error in the DOM, set error messages into your state etc
+      }
+    }
+}
 
 /**
- * do something when an error occurs during validation
+ * A callback to handle errors that occur during validation
+ * exception are caught and you can decide to either throw it again or not so the rest of the app keeps working
  */
-let error_handler = (error) => {};
+function error_handler (type, error) {
+  // this is NOT for handling a validation error (ie: a value is not valid)  
+}
 
 
 /**
  * Custom validation messages
- * The library comes with predefined messages for it's built-in-rules
+ * The library comes with predefined messages for it's built-in-rules but can use instance-specific messages
  */
 let messages = {
   'password:min_length': 'Come on, you\'re not even trying',
@@ -72,24 +78,36 @@ let validator = SiriusValidation.build(rules, change_handler, error_handler, mes
 
 #### 2. Pass data to the validator
 
+This has to be done depending on the tools you are using. Maybe you need to intercept browser events, set watchers in your framework of choice etc
+
 ```javascript
 validator.set('addresses[0][city]', 'New');
 
-/**
- * At this point the change event is triggered and the `change_handler` should be able to make changes to the application. Here's an example of a handler
- * 
- * `this` is bound to the validator
- */ 
+// or you can set an object
+validator.set('addresses[0]', {city: 'New'}, true); // 3rd argument skips validation
 
-function change_handler(type, path) {
-  // do this only for validation changes
-  if (type === 'validation') {
-    if (this.hasError(path)) {
-      console.log(path, this.getError(path));
-      // here you can inject the error in the DOM, set error messages into your state etc
+// or you can set everything at once (eg: you loaded data from API)
+validator.setData(obj, true, true); // 2nd argument skip validation and reset the form (error messages, touched fields etc)
+
+/**
+ * At this point the `change_handler` is called and it should be able to make changes to the application. 
+ */ 
+```
+
+#### 3. Submit form
+
+```javascript
+
+function submit() {
+  validator.validate().then(function(isValid) {
+    if (isValid) {
+      // send data to the server
     }
-  }
+  }).then(function(response) {
+    // maybe set server-side validation errors, show success message etc
+  });
 }
+
 ```
 
 ## Why this style? 
@@ -110,12 +128,12 @@ function change_handler(type, path) {
 }
 ```
 
+## Caveats & known-issues
+
+1. Only one asynchronous validator per selector. It should be the last
+
+
 ## Links
 
 - [documentation](http://sirius.ro/javascript/validation/)
 - [changelog](CHANGELOG.md)
-
-
-## Caveats & known-issues
-
-1. Only one asynchronous validator per selector. It should be the last

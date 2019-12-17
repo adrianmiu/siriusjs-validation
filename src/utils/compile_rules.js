@@ -1,5 +1,11 @@
 import rule_registry from "../rule_registry";
 
+/**
+ * Extract the name and parameters of a rule
+ *
+ * @param rule
+ * @returns {*}
+ */
 function extract_rule_details(rule) {
 
   if (rule.indexOf('(') === -1) {
@@ -23,6 +29,11 @@ function extract_rule_details(rule) {
   }
 }
 
+/**
+ * Generates the rules object from a rule definition
+ * @param definition - ex: `required | min_length(6) | equal("@some_path"`
+ * @returns {*}
+ */
 function compile_rules(definition) {
   // the rules should already be in the proper format
   if (typeof definition === 'object') {

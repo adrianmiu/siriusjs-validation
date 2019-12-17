@@ -1,3 +1,11 @@
+/**
+ * Returns a value from an object based on a path
+ *
+ * @param obj
+ * @param path - ex: "username", "address[city]", "invoice_lines[2][product_id]"
+ * @param default_value
+ * @returns {*}
+ */
 function get (obj, path, default_value) {
   let first_open_braket = path.indexOf('[');
   let first_close_braket = path.indexOf(']');

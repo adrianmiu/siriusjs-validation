@@ -20,6 +20,11 @@ import regex from './rule/regex';
 import integer from './rule/integer';
 import number from './rule/number';
 
+/**
+ * Holds the built-in validation rules and here we add the custom rules
+ *
+ * @type {{required: *, required_with: *, required_without: *, equal: *, greater_than: *, lower_than: *, min: *, max: *, min_length: *, max_length: *, contains: *, starts_with: *, ends_with: *, email: *, url: *, in_list: *, not_in_list: *, alpha: *, alpha_num: *, slug: *, regex: *, integer: *, number: *, array_min_length: *, array_max_length: *}}
+ */
 var registry = {
   required,
   required_with,

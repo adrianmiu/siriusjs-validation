@@ -1,3 +1,11 @@
+/**
+ * Set a value for a path into an object
+ *
+ * @param obj
+ * @param path - ex: "username", "address[city]", "invoice_lines[2][product_id]"
+ * @param value
+ * @returns {*}
+ */
 function set(obj, path, value) {
   let parts = path.replace(/\]/g, '').split('[');
   let working_obj = obj;

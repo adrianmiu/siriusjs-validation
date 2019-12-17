@@ -22,12 +22,12 @@ import get_ref_path from "./utils/get_ref_path";
  */
 function build(rules, change_handler, error_handler, messages, error_compiler) {
 
-  let $touched = {};
-  let $dirty = {};
-  let $pending = {};
-  let $errors = {};
-  let $references = {};
-  let $data = {};
+  let $touched = {};    // stores the paths that have been in `set()` calls
+  let $dirty = {};      // stores the paths that have been in `set()` calls AND changed the initial value
+  let $pending = {};    // stores the paths that are waiting for async validators to resolve
+  let $errors = {};     // stores the error messages for invalid paths
+  let $references = {}; // stores the list of compiled references between linked selectors
+  let $data = {};       // holds the data that is being validated
 
   error_handler = error_handler || console.log;
   error_compiler = error_compiler || default_error_compiler;
@@ -45,6 +45,10 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
   let v = {
     $rules: {},
 
+    /**
+     * Returns all the data that is being validated by the form
+     * @returns {{}}
+     */
     getData() {
       return $data;
     },
@@ -174,6 +178,12 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
       notify_validation_changes(path);
     },
 
+    /**
+     * If path is not provided it returns the valid state for the entire form
+     *
+     * @param path
+     * @returns {boolean}
+     */
     hasError(path) {
       if (!path) {
         return Object.values($errors).filter((value) => {
@@ -192,11 +202,17 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
       notify_state_changes(path);
     },
 
+    /**
+     * If path is not provided it returns the pending state for the entire form
+     *
+     * @param path
+     * @returns {*}
+     */
     isPending(path) {
       if (!path) {
-        return Object.values($pending).filter((value) => {
+        return !!Object.values($pending).find((value) => {
           return !!value
-        }).length > 0;
+        });
       }
       return $pending[path];
     },
@@ -289,7 +305,7 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
           let current = new Date();
           if (current - start > 5000) {
             clearInterval(interval);
-            error_handler.call(this, new Error('Data validation has timed out'));
+            error_handler.call(this, 'promise', new Error('Data validation has timed out'));
           } else if (!this.isPending()) {
             resolve(this.isValid());
           }

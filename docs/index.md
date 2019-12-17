@@ -1,4 +1,4 @@
-#SiriusJS Validation
+# SiriusJS Validation
 
 [![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation/blob/master/LICENSE)
@@ -59,7 +59,7 @@ function change_handler (type, path) {
  * A callback to handle errors that occur during validation
  * exception are caught and you can decide to either throw it again or not so the rest of the app keeps working
  */
-function error_handler (error) {
+function error_handler (type, error) {
   // this is NOT for handling a validation error (ie: a value is not valid)  
 }
 

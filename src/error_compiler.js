@@ -1,6 +1,18 @@
 import default_messages from './lang/en.js'
 import get_target_value from './utils/get_target_value'
 
+/**
+ * Default function that generates the error messages
+ * From a list of messages it extracts the most specific one and
+ * replaces the placeholders (eg: "{min}" with the actual values
+ *
+ * @param validator
+ * @param path
+ * @param failed_rule_selector
+ * @param failed_rule_name
+ * @param messages
+ * @returns {*}
+ */
 export default function(validator, path, failed_rule_selector, failed_rule_name, messages) {
   messages = messages || default_messages;
   let params = validator.$rules[failed_rule_selector][failed_rule_name].params || {};

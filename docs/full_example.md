@@ -54,8 +54,8 @@ For the change handler `this` is bound to the validator instance
 #### Create an error handler (optional, defaults to console.log)
 
 ```javascript
-function error_handler(error) {
-  console.log(error);
+function error_handler(type, error) {
+  console.log(type, error);
 }
 ```
 
