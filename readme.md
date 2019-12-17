@@ -1,6 +1,6 @@
 # SiriusJS Validation
 
-[![Source Code](http://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation)
+[![Source Code](https://img.shields.io/badge/source-siriusjs/validation-blue.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/adrianmiu/siriusjs-validation/blob/master/LICENSE)
 [![Build Status](https://img.shields.io/travis/adrianmiu/siriusjs-validation/master.svg?style=flat-square)](https://travis-ci.org/siriusjs/validation)
 
