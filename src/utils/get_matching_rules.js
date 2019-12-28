@@ -1,11 +1,12 @@
 import is_path_matching_selector from './is_path_matching_selector'
+import foreach_object from './foreach_object'
 
 /**
  * Returns the rules that match a particular path ordered by specificity
  * A validator may contain more than 1 selector that matches a path and this function
  * finds all the selectors that match a path and orders them by priority so that,
  * when the validation is performed, the validators are executed in a proper order
- * 
+ *
  * @param path
  * @param rules
  * @returns {*}
@@ -35,7 +36,7 @@ export default function (path, rules) {
   var matching_rules = [];
 
   matching_selectors.forEach(function (selector) {
-    Object.keys(rules[selector]).forEach(function (rule) {
+    foreach_object(rules[selector], function(rule, validator) {
       // we only set it once so rules from less specific selectors
       // don't overwrite the rules from more specific selectors
       if (!matching_rules.find(function (item) {
@@ -44,7 +45,7 @@ export default function (path, rules) {
         matching_rules.push({
           selector: selector,
           name: rule,
-          validator: rules[selector][rule]
+          validator: validator
         });
       }
     });

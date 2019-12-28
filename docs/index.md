@@ -48,11 +48,16 @@ function change_handler (type, path) {
   
   // `this` is bound to the validator
   if (type === 'validation') {
-      if (this.hasError(path)) {
-        console.log(path, this.getError(path));
-        // here you can inject the error in the DOM, set error messages into your state etc
-      }
+    if (this.hasError(path)) {
+      console.log(path, ' is not valid: ', this.getError(path));
+      // here you can inject the error in the DOM, set error messages into your state etc
     }
+  }
+  if (type === 'state') {
+    if (this.isPending(path)) {
+      console.log(path, ' is waiting validation result');
+    }
+  }
 }
 
 /**
@@ -87,7 +92,7 @@ validator.set('addresses[0][city]', 'New');
 validator.set('addresses[0]', {city: 'New'}, true); // 3rd argument skips validation
 
 // or you can set everything at once (eg: you loaded data from API)
-validator.setData(obj, true, true); // 2nd argument skip validation and reset the form (error messages, touched fields etc)
+validator.setData(obj, true, true); // 2nd argument skips validation and resets the form (error messages, touched fields etc)
 
 /**
  * At this point the `change_handler` is called and it should be able to make changes to the application. 

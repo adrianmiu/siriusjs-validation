@@ -1,4 +1,5 @@
 import is_nested from "./is_nested";
+import foreach_object from './foreach_object'
 
 /**
  * Recursive function to convert an deeply nested object into a 1-level object
@@ -25,9 +26,8 @@ import is_nested from "./is_nested";
 function flatten_object (obj, branch) {
   let result = {};
   if (is_nested(obj)) {
-    Object.keys(obj).forEach((key) => {
+    foreach_object(obj, function(key, value) {
       let path = branch ? branch + '[' + key + ']' : key;
-      let value = obj[key];
       result[path] = value;
       if (is_nested(value)) {
         Object.assign(result, flatten_object(value, path));

@@ -9,6 +9,7 @@ import ensure_selector_paths_are_present from './utils/ensure_selector_paths_are
 import flatten_object from "./utils/flatten_object";
 import compile_references from "./utils/compile_references";
 import get_ref_path from "./utils/get_ref_path";
+import foreach_object from "./utils/foreach_object";
 
 /**
  * Generates a validation object
@@ -64,13 +65,13 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
      */
     setData(new_data, skip_validation, reset) {
       if (reset) {
-        Object.keys(new_data).forEach((path) => {
+        foreach_object(new_data, function(path) {
           delete $data[path];
         });
       }
 
-      Object.keys(new_data).forEach((path) => {
-        this.set(path, new_data[path], skip_validation);
+      foreach_object(new_data, (path, value) => {
+        this.set(path, value, skip_validation);
       });
     },
 
@@ -117,8 +118,8 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
      */
     addRules(selector, selector_rules) {
       if (typeof selector === 'object') {
-        Object.keys(selector).forEach((key) => {
-          this.$rules[key] = compile_rules(selector[key]);
+        foreach_object(selector, (key, rules) => {
+          this.$rules[key] = compile_rules(rules);
         });
       } else {
         this.$rules[selector] = compile_rules(selector_rules);
@@ -228,12 +229,12 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
       // recursively validate children
       if (is_nested(value)) {
         // remove previous error messages
-        Object.keys($errors).forEach((item) => {
+        foreach_object($errors, (item) => {
           if (item !== path && item.substr(0, path.length) === path) {
             delete $errors[item];
           }
         });
-        Object.keys(value).forEach((key) => {
+        foreach_object(value, (key) => {
           this.validateItem(path + '[' + key + ']');
         });
       }

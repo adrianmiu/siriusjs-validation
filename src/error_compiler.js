@@ -1,5 +1,6 @@
 import default_messages from './lang/en.js'
 import get_target_value from './utils/get_target_value'
+import foreach_object from './utils/foreach_object'
 
 /**
  * Default function that generates the error messages
@@ -13,7 +14,7 @@ import get_target_value from './utils/get_target_value'
  * @param messages
  * @returns {*}
  */
-export default function(validator, path, failed_rule_selector, failed_rule_name, messages) {
+export default function (validator, path, failed_rule_selector, failed_rule_name, messages) {
   messages = messages || default_messages;
   let params = validator.$rules[failed_rule_selector][failed_rule_name].params || {};
   let computed_params = {};
@@ -21,10 +22,9 @@ export default function(validator, path, failed_rule_selector, failed_rule_name,
   /**
    * Compute the values of the params since they will be replaced in the message templates
    */
-  Object.keys(params).forEach(function(param) {
-    computed_params[params] = get_target_value(validator.data, path, params[param]);
+  foreach_object(params, function (key, value) {
+    computed_params[key] = get_target_value(validator.data, path, value);
   });
-
 
   /**
    * The potential messages contain keys from the `messages` variable that may be used to generate the error message
@@ -36,7 +36,7 @@ export default function(validator, path, failed_rule_selector, failed_rule_name,
     failed_rule_name
   ];
 
-  let matched_message = potential_messages.find(function(msg) {
+  let matched_message = potential_messages.find(function (msg) {
     return messages[msg];
   });
 
@@ -48,8 +48,8 @@ export default function(validator, path, failed_rule_selector, failed_rule_name,
 
   if (error) {
     // replace placeholders with actual parameter values
-    Object.keys(params).forEach(function(p) {
-      error = error.replace(new RegExp('\{'+p+'\}', 'g'), get_target_value(validator.getData(), path, params[p]));
+    foreach_object(params, function (param, value) {
+      error = error.replace(new RegExp('\{' + param + '\}', 'g'), get_target_value(validator.getData(), path, value));
     });
     return error;
   }
