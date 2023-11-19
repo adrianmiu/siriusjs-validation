@@ -1,6 +1,6 @@
 import default_messages from './lang/en.js'
-import get_target_value from './utils/get_target_value'
-import foreach_object from './utils/foreach_object'
+import get_target_value from './utils/getTargetValue'
+import foreachInObject from './utils/foreachInObject'
 
 /**
  * Default function that generates the error messages
@@ -22,7 +22,7 @@ export default function (validator, path, failed_rule_selector, failed_rule_name
   /**
    * Compute the values of the params since they will be replaced in the message templates
    */
-  foreach_object(params, function (key, value) {
+  foreachInObject(params, function (key, value) {
     computed_params[key] = get_target_value(validator.data, path, value);
   });
 
@@ -48,8 +48,8 @@ export default function (validator, path, failed_rule_selector, failed_rule_name
 
   if (error) {
     // replace placeholders with actual parameter values
-    foreach_object(params, function (param, value) {
-      error = error.replace(new RegExp('\{' + param + '\}', 'g'), get_target_value(validator.getData(), path, value));
+    foreachInObject(params, function (param, value) {
+      error = error.replace(new RegExp('{' + param + '}', 'g'), get_target_value(validator.getData(), path, value));
     });
     return error;
   }

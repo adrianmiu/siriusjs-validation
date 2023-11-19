@@ -1,10 +1,11 @@
 /**
- * Used to determine if a particular path that is being validated matches a path defined in the validator
+ * Used to determine if a particular path matches another path
  *
- * items[0][quantity] matches items[*][quantity]
+ * Ex: items[0][quantity] matches items[*][quantity]
+ * Ex: items[0][quantity] does NOT match products[*][quantity]
  *
- * @param path
- * @param selector
+ * @param {string} path
+ * @param {string} selector
  * @returns {boolean}
  */
 export default function (path, selector) {

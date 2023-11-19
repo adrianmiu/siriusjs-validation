@@ -1,4 +1,4 @@
-import rule_registry from '../src/rule_registry'
+import rule_registry from '../src/builtInRules'
 
 rule_registry['mustBeCool'] = function() {
   return function(value) {

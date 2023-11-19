@@ -1,4 +1,4 @@
-import is_path_matching_selector from '../../src/utils/is_path_matching_selector'
+import is_path_matching_selector from '../../src/utils/pathMatchesSelector'
 
 describe('Test function that checks if a path matches a selector', () => {
   test('is_path_matching_selector', () => {

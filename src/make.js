@@ -1,27 +1,27 @@
-import default_messages from './lang/en'
-import default_error_compiler from './error_compiler'
-import compile_rules from './utils/compile_rules'
+import defaultMessages from './lang/en'
+import defaultErrorMessageCompiler from './errorMessageCompiler'
+import compileRules from './utils/compileRules'
 import get from './utils/get'
 import set from './utils/set'
-import get_matching_rules from './utils/get_matching_rules'
-import is_nested from './utils/is_nested'
-import ensure_selector_paths_are_present from './utils/ensure_selector_paths_are_present'
-import flatten_object from "./utils/flatten_object";
-import compile_references from "./utils/compile_references";
-import get_ref_path from "./utils/get_ref_path";
-import foreach_object from "./utils/foreach_object";
+import getMatchingRules from './utils/getMatchingRules'
+import isNested from './utils/isNested'
+import ensurePaths from './utils/ensurePaths'
+import flattenObject from "./utils/flattenObject";
+import compileReferences from "./utils/compileReferences";
+import getReferencePath from "./utils/getReferencePath";
+import foreachInObject from "./utils/foreachInObject";
 
 /**
  * Generates a validation object
  *
  * @param rules - validation rules
- * @param change_handler - function to be executed whenever the validation or pending state changes (optional)
- * @param error_handler - function to be executed whenever there's an error during validation
- * @param messages - special error messages that are added to the defaults (optional)
- * @param error_compiler - function to generate the error messages (optional)
- * @returns {validator object}
+ * @param {function} onChange - function to be executed whenever the validation or pending state changes (optional)
+ * @param {function} onError - function to be executed whenever there's an error during validation
+ * @param {Object.<string,string>} messages - special error messages that are added to the defaults (optional)
+ * @param {function} errorMessageCompiler - function to generate the error messages (optional)
+ * @returns {Object}
  */
-function build(rules, change_handler, error_handler, messages, error_compiler) {
+function make(rules, onChange, onError, messages, errorMessageCompiler) {
 
   let $touched = {};    // stores the paths that have been in `set()` calls
   let $dirty = {};      // stores the paths that have been in `set()` calls AND changed the initial value
@@ -30,17 +30,17 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
   let $references = {}; // stores the list of compiled references between linked selectors
   let $data = {};       // holds the data that is being validated
 
-  error_handler = error_handler || console.log;
-  error_compiler = error_compiler || default_error_compiler;
-  messages = Object.assign({}, default_messages, messages);
+  onError = onError || console.log;
+  errorMessageCompiler = defaultErrorMessageCompiler || errorMessageCompiler;
+  messages = Object.assign({}, defaultMessages, messages);
 
   const notify_validation_changes = function (path) {
-    typeof change_handler === 'function' && change_handler.call(v, 'validation', path);
+    typeof onChange === 'function' && onChange.call(v, 'validation', path);
   };
 
 
   const notify_state_changes = function (path) {
-    typeof change_handler === 'function' && change_handler.call(v, 'state', path);
+    typeof onChange === 'function' && onChange.call(v, 'state', path);
   };
 
   let v = {
@@ -65,12 +65,12 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
      */
     setData(new_data, skip_validation, reset) {
       if (reset) {
-        foreach_object(new_data, function(path) {
+        foreachInObject(new_data, function(path) {
           delete $data[path];
         });
       }
 
-      foreach_object(new_data, (path, value) => {
+      foreachInObject(new_data, (path, value) => {
         this.set(path, value, skip_validation);
       });
     },
@@ -97,7 +97,7 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
       }
       if (!skip_validation && $references[path]) {
         $references[path].forEach((ref) => {
-          let ref_path = get_ref_path(path, ref);
+          let ref_path = getReferencePath(path, ref);
           if (this.isTouched(ref_path)) {
             this.validateItem(ref_path);
           }
@@ -113,18 +113,18 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
      *  password: 'required | min_length(6)'
      * });
      *
-     * @param selector
-     * @param rules
+     * @param {string|Object} selector
+     * @param {string|Object|null} rules
      */
-    addRules(selector, selector_rules) {
+    addRules(selector, rules) {
       if (typeof selector === 'object') {
-        foreach_object(selector, (key, rules) => {
-          this.$rules[key] = compile_rules(rules);
+        foreachInObject(selector, (key, rules) => {
+          this.$rules[key] = compileRules(rules);
         });
       } else {
-        this.$rules[selector] = compile_rules(selector_rules);
+        this.$rules[selector] = compileRules(rules);
       }
-      $references = compile_references(this.$rules);
+      $references = compileReferences(this.$rules);
     },
 
     /**
@@ -147,7 +147,7 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
           delete this.$rules[selector][rule]
         }
       });
-      $references = compile_references(this.$rules);
+      $references = compileReferences(this.$rules);
     },
 
     setTouched(path) {
@@ -223,18 +223,18 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
     },
 
     validateItem(path) {
-      let matching_rules = get_matching_rules(path, this.$rules);
+      let matching_rules = getMatchingRules(path, this.$rules);
       let value = this.get(path);
 
       // recursively validate children
-      if (is_nested(value)) {
+      if (isNested(value)) {
         // remove previous error messages
-        foreach_object($errors, (item) => {
-          if (item !== path && item.substr(0, path.length) === path) {
+        foreachInObject($errors, (item) => {
+          if (item !== path && item.substring(0, path.length) === path) {
             delete $errors[item];
           }
         });
-        foreach_object(value, (key) => {
+        foreachInObject(value, (key) => {
           this.validateItem(path + '[' + key + ']');
         });
       }
@@ -256,7 +256,7 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
           let result = current_rule.validator.validate(value, path, $data);
 
           if (result === false) {
-            error_message = error_compiler(this, path, current_rule.selector, current_rule.name, messages);
+            error_message = errorMessageCompiler(this, path, current_rule.selector, current_rule.name, messages);
             break;
           }
 
@@ -266,13 +266,13 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
             this.setPending(path, true);
             result.then((result) => {
               if (result === false) {
-                this.setError(path, error_compiler(this, path, current_rule.selector, current_rule.name, messages));
+                this.setError(path, errorMessageCompiler(this, path, current_rule.selector, current_rule.name, messages));
               } else {
                 this.setError(path, null);
               }
               this.setPending(path, false);
             }).catch(function (e) {
-              error_handler.call(this, 'field_validation', e);
+              onError.call(this, 'field_validation', e);
             });
             // noinspection JSAnnotator
             break;
@@ -280,13 +280,13 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
         }
         this.setError(path, error_message);
       } catch (e) {
-        error_handler.call(this, 'field_validation', e);
+        onError.call(this, 'field_validation', e);
       }
     },
 
     validate() {
-      ensure_selector_paths_are_present($data, Object.keys(this.$rules));
-      let paths = Object.keys(flatten_object($data));
+      ensurePaths($data, Object.keys(this.$rules));
+      let paths = Object.keys(flattenObject($data));
       paths.forEach((path) => {
         // validate if not previously validated
         if (!$errors.hasOwnProperty(path)) {
@@ -306,7 +306,7 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
           let current = new Date();
           if (current - start > 5000) {
             clearInterval(interval);
-            error_handler.call(this, 'promise', new Error('Data validation has timed out'));
+            onError.call(this, 'promise', new Error('Data validation has timed out'));
           } else if (!this.isPending()) {
             resolve(this.isValid());
           }
@@ -328,4 +328,4 @@ function build(rules, change_handler, error_handler, messages, error_compiler) {
   return v;
 }
 
-export default build
+export default make

@@ -4,14 +4,14 @@ var rule_factory = function (validationFn, params_names) {
     let params = {};
     let refs = [];
     if (params_names) {
-      params = params_names.reduce(function(acc, name, idx) {
+      params = params_names.reduce(function (acc, name, idx) {
         acc[name] = options[idx];
         return acc;
       }, {});
-      refs = params_names.reduce(function(acc, name, idx) {
+      refs = params_names.reduce(function (acc, name, idx) {
         let param = options[idx];
-        if ((typeof param === 'string' || param instanceof String) &&  param.substr(0, 1) === '@') {
-          acc.push(param.substr(1));
+        if ((typeof param === 'string' || param instanceof String) && param.substring(0, 1) === '@') {
+          acc.push(param.substring(1));
         }
         return acc;
       }, [])

@@ -1,26 +1,26 @@
-import rule_registry from "../rule_registry";
+import rule_registry from "../builtInRules";
 
 /**
  * Extract the name and parameters of a rule
  *
- * @param rule
+ * @param {string} rule
  * @returns {*}
  */
-function extract_rule_details(rule) {
+function extractRuleDetails(rule) {
 
   if (rule.indexOf('(') === -1) {
     return {name: rule, params: []};
   }
 
-  if (rule.substr(-1, 1) !== ')') {
+  if (!rule.endsWith(')')) {
     throw 'Rule expression is not correct. Good expression: "between(3,5)"';
   }
 
-  let first_para = rule.indexOf('(');
+  let firstParanthesis = rule.indexOf('(');
 
   let matches = [
-    rule.substr(0, first_para),
-    rule.substr(first_para + 1, rule.length - first_para - 2)
+    rule.substring(0, firstParanthesis),
+    rule.substring(firstParanthesis + 1, rule.length - 1)
   ];
 
   return {
@@ -31,10 +31,10 @@ function extract_rule_details(rule) {
 
 /**
  * Generates the rules object from a rule definition
- * @param definition - ex: `required | min_length(6) | equal("@some_path"`
+ * @param {string|Object} definition - ex: `required | min_length(6) | equal("@some_path"`
  * @returns {*}
  */
-function compile_rules(definition) {
+function compileRules(definition) {
   // the rules should already be in the proper format
   if (typeof definition === 'object') {
     return definition;
@@ -49,7 +49,7 @@ function compile_rules(definition) {
   let compiled_rules = {};
 
   rules.forEach(function (rule) {
-    let details = extract_rule_details(rule);
+    let details = extractRuleDetails(rule);
     if (!rule_registry[details.name]) {
       throw 'Rule named ' + details.name + ' is not registered';
     }
@@ -60,4 +60,4 @@ function compile_rules(definition) {
   return compiled_rules;
 }
 
-export default compile_rules
+export default compileRules

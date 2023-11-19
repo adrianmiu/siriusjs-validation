@@ -13,7 +13,7 @@ describe('Sirius Validation library', () => {
     let rules = {
       'username': 'required'
     };
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('username', '');
     expect(validator.hasError('username')).toBe(true);
@@ -30,7 +30,7 @@ describe('Sirius Validation library', () => {
     let rules = {
       'username': 'required'
     };
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.setData({
       username: 'cool'
     });
@@ -52,7 +52,7 @@ describe('Sirius Validation library', () => {
       'password': 'required | min_length(6)',
       'confirm_password': 'required | min_length(6) | equal("@password")',
     };
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('password', 'abcdef');
 
@@ -73,7 +73,7 @@ describe('Sirius Validation library', () => {
       'confirm_password:equal': 'Passwords must match'
     };
 
-    let validator = SiriusValidation.build(rules, on_change, null, messages);
+    let validator = SiriusValidation.make(rules, on_change, null, messages);
 
     validator.set('password', 'abcdef');
 
@@ -90,14 +90,14 @@ describe('Sirius Validation library', () => {
     };
     let messages = {};
 
-    SiriusValidation.add_rule('custom_rule', function () {
+    SiriusValidation.rule('custom_rule', function () {
       return {
         validate: function (value, path, context) {
           throw 'Exception during validation';
         }
       };
     }, 'Field does not match custom rule');
-    let validator = SiriusValidation.build(rules, on_change, on_error, messages);
+    let validator = SiriusValidation.make(rules, on_change, on_error, messages);
 
     validator.set('password', 'abcdef');
     expect(on_error).toHaveBeenCalled();
@@ -109,7 +109,7 @@ describe('Sirius Validation library', () => {
     };
     let messages = {};
 
-    SiriusValidation.add_rule('custom_rule', function () {
+    SiriusValidation.rule('custom_rule', function () {
       return {
         validate: function (value) {
 
@@ -117,10 +117,25 @@ describe('Sirius Validation library', () => {
         }
       };
     }, 'Field does not match custom rule');
-    let validator = SiriusValidation.build(rules, on_change, on_error, messages);
+    let validator = SiriusValidation.make(rules, on_change, on_error, messages);
 
     validator.set('password', 'abcdef');
     expect(validator.getError('password')).toBe('Field does not match custom rule');
+  });
+
+  test('Test validation rule with references', () => {
+    let rules = {
+      'password': 'required | equal("@confirm_password")',
+    };
+    let messages = {
+      'password:equal': 'Password must be confirmed'
+    };
+
+    let validator = SiriusValidation.make(rules, on_change, on_error, messages);
+
+    validator.set('password', 'abcdef');
+    validator.set('confirm_password', 'abcdef234');
+    expect(validator.getError('password')).toBe('Password must be confirmed');
   });
 
 
@@ -133,7 +148,7 @@ describe('Sirius Validation library', () => {
       'emails[0]': 'equal("email@domain.com")',
     };
     let messages = {};
-    let validator = SiriusValidation.build(rules, on_change, on_error, messages);
+    let validator = SiriusValidation.make(rules, on_change, on_error, messages);
 
     validator.set('emails[0]', '');
     expect(validator.getError('emails[0]')).toBe('This field is required');
@@ -158,7 +173,7 @@ describe('Sirius Validation library', () => {
     };
     let messages = {};
 
-    SiriusValidation.add_rule('async_rule', function () {
+    SiriusValidation.rule('async_rule', function () {
       return {
         validate: function (value, path, context) {
           return new Promise(function (resolve, reject) {
@@ -170,7 +185,7 @@ describe('Sirius Validation library', () => {
       };
     }, 'Field does not match async rule');
 
-    let validator = SiriusValidation.build(rules, on_change, on_error, messages);
+    let validator = SiriusValidation.make(rules, on_change, on_error, messages);
 
     validator.set('username', 'abcdef');
     expect(validator.isPending('username')).toBe(true);
@@ -190,7 +205,7 @@ describe('Sirius Validation library', () => {
       }
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('password', '123456');
     expect(validator.hasError('password')).toBe(false);
@@ -205,7 +220,7 @@ describe('Sirius Validation library', () => {
       }
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('username', 'abc');
     expect(validator.hasError('username')).toBe(false);
@@ -220,7 +235,7 @@ describe('Sirius Validation library', () => {
       }
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('username', 'abc');
     expect(validator.hasError('username')).toBe(true);
@@ -236,10 +251,10 @@ describe('Sirius Validation library', () => {
     };
 
     let builder = () => {
-      return SiriusValidation.build(rules, on_change)
+      return SiriusValidation.make(rules, on_change)
     }
 
-    expect(builder).toThrow(new Error('Validation rules definition should be a string'));
+    expect(builder).toThrow('Validation rules definition should be a string');
   });
 
   test('Test exception thrown if rule definition does not have the proper format', () => {
@@ -249,10 +264,10 @@ describe('Sirius Validation library', () => {
     };
 
     let builder = () => {
-      return SiriusValidation.build(rules, on_change)
+      return SiriusValidation.make(rules, on_change)
     };
 
-    expect(builder).toThrow(new Error('Rule expression is not correct. Good expression: "between(3,5)"'));
+    expect(builder).toThrow('Rule expression is not correct. Good expression: "between(3,5)"');
   });
 
   test('Test exception thrown if rule is missing', () => {
@@ -262,10 +277,10 @@ describe('Sirius Validation library', () => {
     };
 
     let builder = () => {
-      return SiriusValidation.build(rules, on_change)
+      return SiriusValidation.make(rules, on_change)
     };
 
-    expect(builder).toThrow(new Error('Rule named unknown_rule is not registered'));
+    expect(builder).toThrow('Rule named unknown_rule is not registered');
   });
 
   test('Test default validation message', () => {
@@ -274,14 +289,14 @@ describe('Sirius Validation library', () => {
       'username': 'required | custom_rule_without_message'
     };
 
-    SiriusValidation.add_rule('custom_rule_without_message', function () {
+    SiriusValidation.rule('custom_rule_without_message', function () {
       return {
         validate: (value) => {
           return value === 'custom'
         }
       };
     }, '');
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.set('username', 'not_custom');
 
     expect(validator.getError('username')).toBe('Field is not valid');
@@ -293,7 +308,7 @@ describe('Sirius Validation library', () => {
       'username': 'required | custom_rule_without_message'
     };
 
-    SiriusValidation.add_rule('custom_rule_without_message', function () {
+    SiriusValidation.rule('custom_rule_without_message', function () {
       return {
         validate: (value) => {
           return value === 'custom'
@@ -302,7 +317,7 @@ describe('Sirius Validation library', () => {
     }, (validator, path) => {
       return validator.get(path) + ' is wrong!'
     });
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.set('username', 'not_custom');
 
     expect(validator.getError('username')).toBe('not_custom is wrong!');
@@ -319,7 +334,7 @@ describe('Sirius Validation library', () => {
       'emails[*]': 'required | email'
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.setData({
       range: {start: 2, end: 1},
       emails: ['new_email@domain.com', 'wrong_email']
@@ -336,7 +351,7 @@ describe('Sirius Validation library', () => {
       'emails[*]': 'required | email'
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.setData({
       range: {start: 2, end: 1},
       emails: ['email@domain.com', 'wrong_email']
@@ -355,7 +370,7 @@ describe('Sirius Validation library', () => {
       'stop': 'required | async_rule'
     };
 
-    SiriusValidation.add_rule('async_rule', function () {
+    SiriusValidation.rule('async_rule', function () {
       return {
         validate: function (value, path, context) {
           return new Promise(function (resolve, reject) {
@@ -367,7 +382,7 @@ describe('Sirius Validation library', () => {
       };
     }, 'Field does not match async rule');
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.setData({
       start: 'ok',
       stop: 'not ok'
@@ -388,7 +403,7 @@ describe('Sirius Validation library', () => {
       'username': 'required | min_length(6)'
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('username', 'abc');
     expect(validator.hasError('username')).toBe(true);
@@ -403,7 +418,7 @@ describe('Sirius Validation library', () => {
     let data = {};
     let rules = {};
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
     validator.addRules('username', 'required');
 
     validator.set('username', '');
@@ -416,7 +431,7 @@ describe('Sirius Validation library', () => {
       'username': 'required'
     };
 
-    let validator = SiriusValidation.build(rules, on_change);
+    let validator = SiriusValidation.make(rules, on_change);
 
     validator.set('username', '');
     expect(validator.hasError('username')).toBe(true);

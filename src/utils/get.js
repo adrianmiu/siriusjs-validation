@@ -1,23 +1,23 @@
 /**
  * Returns a value from an object based on a path
  *
- * @param obj
- * @param path - ex: "username", "address[city]", "invoice_lines[2][product_id]"
- * @param default_value
+ * @param {Object|null} obj
+ * @param {string} path - ex: "username", "address[city]", "invoice_lines[2][product_id]"
+ * @param {*} defaultValue
  * @returns {*}
  */
-function get (obj, path, default_value) {
-  let first_open_braket = path.indexOf('[');
-  let first_close_braket = path.indexOf(']');
+function get (obj, path, defaultValue) {
+  let firstOpenBracket = path.indexOf('[');
+  let firstCloseBracket = path.indexOf(']');
 
-  if (first_open_braket === -1) {
-    return !obj ? default_value : (obj[path] || default_value);
+  if (firstOpenBracket === -1) {
+    return !obj ? defaultValue : (obj[path] || defaultValue);
   }
 
-  let container = path.substr(0, first_open_braket);
-  let remaining_path = path.substr(first_open_braket + 1, first_close_braket - first_open_braket - 1) + path.substr(first_close_braket + 1);
+  let container = path.substring(0, firstOpenBracket);
+  let remaining_path = path.substring(firstOpenBracket + 1, firstCloseBracket) + path.substring(firstCloseBracket + 1);
 
-  return get(obj[container], remaining_path, default_value);
+  return get(obj[container], remaining_path, defaultValue);
 }
 
 export default get

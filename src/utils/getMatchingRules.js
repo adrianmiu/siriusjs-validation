@@ -1,5 +1,5 @@
-import is_path_matching_selector from './is_path_matching_selector'
-import foreach_object from './foreach_object'
+import pathMatchesSelector from './pathMatchesSelector'
+import foreachInObject from './foreachInObject'
 
 /**
  * Returns the rules that match a particular path ordered by specificity
@@ -13,7 +13,7 @@ import foreach_object from './foreach_object'
  */
 export default function (path, rules) {
   let matching_selectors = Object.keys(rules).filter(function (selector) {
-    return is_path_matching_selector(path, selector);
+    return pathMatchesSelector(path, selector);
   });
   if (matching_selectors.length == 0) {
     return false
@@ -36,7 +36,7 @@ export default function (path, rules) {
   var matching_rules = [];
 
   matching_selectors.forEach(function (selector) {
-    foreach_object(rules[selector], function(rule, validator) {
+    foreachInObject(rules[selector], function(rule, validator) {
       // we only set it once so rules from less specific selectors
       // don't overwrite the rules from more specific selectors
       if (!matching_rules.find(function (item) {

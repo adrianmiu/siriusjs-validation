@@ -12,12 +12,12 @@
  * This utility function will be used by validators to find the corresponding referenced paths
  *
  * @example
- * get_ref_path('a[b][c]', 'a[*][d]') = a[b][d]
- * get_ref_path('a[0][1][c]', 'a[*][2][*]') = a[0][2][c]
- * get_ref_path('a[0][1][c]', 'a[*][*][d]') = a[0][1][d]
+ * getReferencePath('a[b][c]', 'a[*][d]') = a[b][d]
+ * getReferencePath('a[0][1][c]', 'a[*][2][*]') = a[0][2][c]
+ * getReferencePath('a[0][1][c]', 'a[*][*][d]') = a[0][1][d]
  *
- * @param path
- * @param referenced_path
+ * @param {string} path
+ * @param {string} referenced_path
  */
 export default function(path, reference) {
   // no star, means the reference is absolute, not dependend on the path

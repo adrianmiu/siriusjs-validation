@@ -1,5 +1,5 @@
 import rule_factory from './rule_factory'
-import get_target_value from '../utils/get_target_value';
+import get_target_value from '../utils/getTargetValue';
 
 /**
  * @example

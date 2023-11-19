@@ -1,6 +1,6 @@
 import rule_factory from './rule_factory'
-import value_is_present from '../utils/value_is_present';
+import notEmpty from '../utils/notEmpty';
 
 export default rule_factory(function (value) {
-  return !value_is_present(value) || value.substr(-this.params.target.length) === this.params.target;
+  return !notEmpty(value) || value.substring(value.length - this.params.target.length) === this.params.target;
 }, ['target']);
