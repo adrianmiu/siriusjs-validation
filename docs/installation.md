@@ -6,20 +6,19 @@ title: Installating SiriusJS\Validation
 
 ## Using npm
 
-Sirius\Validation is available on [Packagist](https://packagist.org/packages/siriusphp/validation) so you can use
+Sirius\Validation is available on [NPM](https://www.npmjs.com/package/siriusjs-validation) so you can use
 ```
 npm i siriusjs-validation
 ```
 
-Make sure to include the Composer autoload file in your project
+Import the library in your code
+
 ```javascript
 import SiriusValidation from 'siriusjs-validation'
 ```
 
-## Using the dist version and jsdelivr.net
-
-The repo contains a dist folder with the "packaged" file
+or use the UMD version from jsdelivr.net
 
 ```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/siriusjs-validation/dist/validator.min.js" 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/siriusjs-validation/dist/validator.min.js"
 ```

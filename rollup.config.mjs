@@ -6,7 +6,8 @@ export default [
     output: {
       // Replace 'src/' with 'public/' and add '.min' before the file extension
       file: 'dist/validator.min.js',
-      format: 'esm' // or 'esm' or 'cjs', depending on your needs
+      name: 'SiriusValidation',
+      format: 'umd' // or 'esm' or 'cjs', depending on your needs
     },
     plugins: [terser()]
   },
@@ -15,7 +16,8 @@ export default [
     output: {
       // Replace 'src/' with 'public/' and add '.min' before the file extension
       file: 'dist/validator.js',
-      format: 'esm' // or 'esm' or 'cjs', depending on your needs
+      name: 'SiriusValidation',
+      format: 'umd' // or 'esm' or 'cjs', depending on your needs
     }
   }
 ]

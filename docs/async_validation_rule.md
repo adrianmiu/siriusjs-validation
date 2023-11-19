@@ -7,7 +7,7 @@ title: How to create an async validation rule
 Expanding on [how to create a custom validator](/custom_validation_rule.html), here's how you would implement a validator that checks with a server if a username is unique
 
 ```javascript
-function validator_factory(min, max) {
+function uniqueUsernameFactory(min, max) {
   return {
     refs: [], // this is used if the validator
     params: {
@@ -22,6 +22,6 @@ function validator_factory(min, max) {
     }
   }
 }
-SiriusValidation.add_rule('unique_username', validator_factory, 'The username is not unique');
+SiriusValidation.add_rule('unique_username', uniqueUsernameFactory, 'The username is not unique');
 ```
 

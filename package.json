@@ -1,6 +1,6 @@
 {
   "name": "siriusjs-validation",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "Advanced validation library for browsers and Node. Designed to handle complex validation scenarios and integrate with any UI library like Vue, React etc",
   "main": "src/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/adrianmiu/siriusjs-validation"
+    "url": "git+https://github.com/adrianmiu/siriusjs-validation.git"
   },
   "keywords": [
     "form",

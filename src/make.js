@@ -34,12 +34,12 @@ function make(rules, onChange, onError, messages, errorMessageCompiler) {
   errorMessageCompiler = defaultErrorMessageCompiler || errorMessageCompiler;
   messages = Object.assign({}, defaultMessages, messages);
 
-  const notify_validation_changes = function (path) {
+  const notifyValidationChanges = function (path) {
     typeof onChange === 'function' && onChange.call(v, 'validation', path);
   };
 
 
-  const notify_state_changes = function (path) {
+  const notifyStateChanges = function (path) {
     typeof onChange === 'function' && onChange.call(v, 'state', path);
   };
 
@@ -59,19 +59,19 @@ function make(rules, onChange, onError, messages, errorMessageCompiler) {
      * v.setData({a: 'b'})
      * v.setData({'a[b]': ['c', 'd']}, true, true) // clears previous data and skips validation
      *
-     * @param new_data
-     * @param skip_validation | boolean - will not perform validation of data
-     * @param clean | boolean - will remove previously existing values
+     * @param {Object} data
+     * @param {boolean} skipValidation - will not perform validation of data
+     * @param {boolean} reset - will remove previously existing values
      */
-    setData(new_data, skip_validation, reset) {
+    setData(data, skipValidation, reset) {
       if (reset) {
-        foreachInObject(new_data, function(path) {
+        foreachInObject(data, function(path) {
           delete $data[path];
         });
       }
 
-      foreachInObject(new_data, (path, value) => {
-        this.set(path, value, skip_validation);
+      foreachInObject(data, (path, value) => {
+        this.set(path, value, skipValidation);
       });
     },
 
@@ -83,19 +83,19 @@ function make(rules, onChange, onError, messages, errorMessageCompiler) {
      * Method to populate leaf items in the data object tree
      * Use setData() to populate sub-trees
      *
-     * @param path
-     * @param value
-     * @param skip_validation | boolean - will skip validation
+     * @param {string} path
+     * @param {*} value
+     * @param {boolean} skipValidation - will skip validation
      */
-    set(path, value, skip_validation) {
+    set(path, value, skipValidation) {
       let previous_value = this.get(path);
       set($data, path, value);
       this.setTouched(path);
       if (previous_value !== value) {
         this.setDirty(path);
-        skip_validation || this.validateItem(path);
+        skipValidation || this.validateItem(path);
       }
-      if (!skip_validation && $references[path]) {
+      if (!skipValidation && $references[path]) {
         $references[path].forEach((ref) => {
           let ref_path = getReferencePath(path, ref);
           if (this.isTouched(ref_path)) {
@@ -132,8 +132,8 @@ function make(rules, onChange, onError, messages, errorMessageCompiler) {
      * v.removeRules('username', 'required')
      * v.removeRules('username', ['required', 'min_length']
      *
-     * @param selector
-     * @param rules
+     * @param {string} selector
+     * @param {array} rules
      */
     removeRules(selector, rules) {
       if (!this.$rules[selector]) {
@@ -176,7 +176,7 @@ function make(rules, onChange, onError, messages, errorMessageCompiler) {
 
     setError(path, message) {
       $errors[path] = message;
-      notify_validation_changes(path);
+      notifyValidationChanges(path);
     },
 
     /**
@@ -200,7 +200,7 @@ function make(rules, onChange, onError, messages, errorMessageCompiler) {
 
     setPending(path, status) {
       $pending[path] = !!status;
-      notify_state_changes(path);
+      notifyStateChanges(path);
     },
 
     /**

@@ -12,7 +12,7 @@ title: Built-in validation rules
 ### String validators
 1. `alpha`: values must contain only letters and spaces
 2. `alpha_num`: values must contain letters, numbers and spaces
-3. `slug`: values must contain letters, numbers, dashes, underscores and spaces
+3. `slug`: values must contain letters, numbers, dashes and underscores
 4. `min_length`: string's length should be greater than a specified value. Rule params: `min`
 5. `max_length`: string's length should be shorter than a specified value. Rule params: `max`
 6. `contains`: string's length should be shorter than a specified value. Rule params: `max`
@@ -26,16 +26,16 @@ title: Built-in validation rules
 ### Number validators
 1. `number`: value must be a valid number
 2. `integer`: value must be a valid integer
-3. `min`: value must be less than a number. Rule params: `max`
-4. `max`: value must be greater than a number. Rule params: `min`
+3. `min`: value must be greater or equal than a number. Rule params: `max`
+4. `max`: value must be less or equal than a number. Rule params: `min`
 
 ### Email/URLs validators
 1. `email`: value must be an email address. Uses a regular expression for validation
-2. `url`: value must be a valid URL address (http, https, ftp etc)
+2. `url`: value must be a valid URL address (http/https)
 
 ### Other validators
 1. `regex`: value must match a regular expression pattern.  Rule params: `pattern`
-2. `equal`: the value must be the same as predefined value. Rule params: `target`
+2. `equal`: the value must be the same as predefined value. Rule params: `target` which can be a value (eg: 1.234) or a reference (eg: @password_confirmation)
 3. `in_list`: the value must be in a list of acceptable values. Rule params: `list`
 4. `not_in_list`: the value must not be in a list of forbidden values: Rule params: `list`
 

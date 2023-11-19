@@ -76,7 +76,7 @@
 
 <script>
 
-  SiriusValidation.add_rule('unique_username', function() {
+  SiriusValidation.rule('unique_username', function() {
     return {
       validate: function(value) {
         return new Promise(function(resolve) {
@@ -118,7 +118,7 @@
     },
     beforeMount: function() {
       var self = this;
-      this.$v = SiriusValidation.build({
+      this.$v = SiriusValidation.make({
         'username': 'required | min_length(6) | unique_username',
         'password': 'required | min_length(6)',
         'password_confirmation': 'required | min_length(6) | equal("@password")',

@@ -7,16 +7,16 @@ import foreachInObject from './utils/foreachInObject'
  * From a list of messages it extracts the most specific one and
  * replaces the placeholders (eg: "{min}" with the actual values
  *
- * @param validator
- * @param path
- * @param failed_rule_selector
- * @param failed_rule_name
- * @param messages
+ * @param {Object} validator
+ * @param {string} path
+ * @param {string} failedRuleSelector
+ * @param {string} failedRuleName
+ * @param {Object.<string, string>}messages
  * @returns {*}
  */
-export default function (validator, path, failed_rule_selector, failed_rule_name, messages) {
+export default function (validator, path, failedRuleSelector, failedRuleName, messages) {
   messages = messages || default_messages;
-  let params = validator.$rules[failed_rule_selector][failed_rule_name].params || {};
+  let params = validator.$rules[failedRuleSelector][failedRuleName].params || {};
   let computed_params = {};
 
   /**
@@ -31,9 +31,9 @@ export default function (validator, path, failed_rule_selector, failed_rule_name
    * The first one that is found is used
    */
   let potential_messages = [
-    path + ':' + failed_rule_name,
-    failed_rule_selector + ':' + failed_rule_name,
-    failed_rule_name
+    path + ':' + failedRuleName,
+    failedRuleSelector + ':' + failedRuleName,
+    failedRuleName
   ];
 
   let matched_message = potential_messages.find(function (msg) {
@@ -43,7 +43,7 @@ export default function (validator, path, failed_rule_selector, failed_rule_name
   let error = matched_message ? messages[matched_message] : false;
 
   if (typeof error === "function") {
-    return error(validator, path, failed_rule_selector);
+    return error(validator, path, failedRuleSelector);
   }
 
   if (error) {
