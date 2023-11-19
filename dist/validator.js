@@ -140,16 +140,16 @@
    * From a list of messages it extracts the most specific one and
    * replaces the placeholders (eg: "{min}" with the actual values
    *
-   * @param validator
-   * @param path
-   * @param failed_rule_selector
-   * @param failed_rule_name
-   * @param messages
+   * @param {Object} validator
+   * @param {string} path
+   * @param {string} failedRuleSelector
+   * @param {string} failedRuleName
+   * @param {Object.<string, string>}messages
    * @returns {*}
    */
-  function defaultErrorMessageCompiler (validator, path, failed_rule_selector, failed_rule_name, messages$1) {
+  function defaultErrorMessageCompiler (validator, path, failedRuleSelector, failedRuleName, messages$1) {
     messages$1 = messages$1 || messages;
-    let params = validator.$rules[failed_rule_selector][failed_rule_name].params || {};
+    let params = validator.$rules[failedRuleSelector][failedRuleName].params || {};
 
     /**
      * Compute the values of the params since they will be replaced in the message templates
@@ -163,9 +163,9 @@
      * The first one that is found is used
      */
     let potential_messages = [
-      path + ':' + failed_rule_name,
-      failed_rule_selector + ':' + failed_rule_name,
-      failed_rule_name
+      path + ':' + failedRuleName,
+      failedRuleSelector + ':' + failedRuleName,
+      failedRuleName
     ];
 
     let matched_message = potential_messages.find(function (msg) {
@@ -175,7 +175,7 @@
     let error = matched_message ? messages$1[matched_message] : false;
 
     if (typeof error === "function") {
-      return error(validator, path, failed_rule_selector);
+      return error(validator, path, failedRuleSelector);
     }
 
     if (error) {
@@ -642,12 +642,12 @@
     errorMessageCompiler = defaultErrorMessageCompiler || errorMessageCompiler;
     messages$1 = Object.assign({}, messages, messages$1);
 
-    const notify_validation_changes = function (path) {
+    const notifyValidationChanges = function (path) {
       typeof onChange === 'function' && onChange.call(v, 'validation', path);
     };
 
 
-    const notify_state_changes = function (path) {
+    const notifyStateChanges = function (path) {
       typeof onChange === 'function' && onChange.call(v, 'state', path);
     };
 
@@ -667,19 +667,19 @@
        * v.setData({a: 'b'})
        * v.setData({'a[b]': ['c', 'd']}, true, true) // clears previous data and skips validation
        *
-       * @param new_data
-       * @param skip_validation | boolean - will not perform validation of data
-       * @param clean | boolean - will remove previously existing values
+       * @param {Object} data
+       * @param {boolean} skipValidation - will not perform validation of data
+       * @param {boolean} reset - will remove previously existing values
        */
-      setData(new_data, skip_validation, reset) {
+      setData(data, skipValidation, reset) {
         if (reset) {
-          foreachInObject(new_data, function(path) {
+          foreachInObject(data, function(path) {
             delete $data[path];
           });
         }
 
-        foreachInObject(new_data, (path, value) => {
-          this.set(path, value, skip_validation);
+        foreachInObject(data, (path, value) => {
+          this.set(path, value, skipValidation);
         });
       },
 
@@ -691,19 +691,19 @@
        * Method to populate leaf items in the data object tree
        * Use setData() to populate sub-trees
        *
-       * @param path
-       * @param value
-       * @param skip_validation | boolean - will skip validation
+       * @param {string} path
+       * @param {*} value
+       * @param {boolean} skipValidation - will skip validation
        */
-      set(path, value, skip_validation) {
+      set(path, value, skipValidation) {
         let previous_value = this.get(path);
         set($data, path, value);
         this.setTouched(path);
         if (previous_value !== value) {
           this.setDirty(path);
-          skip_validation || this.validateItem(path);
+          skipValidation || this.validateItem(path);
         }
-        if (!skip_validation && $references[path]) {
+        if (!skipValidation && $references[path]) {
           $references[path].forEach((ref) => {
             let ref_path = getReferencePath(path, ref);
             if (this.isTouched(ref_path)) {
@@ -740,8 +740,8 @@
        * v.removeRules('username', 'required')
        * v.removeRules('username', ['required', 'min_length']
        *
-       * @param selector
-       * @param rules
+       * @param {string} selector
+       * @param {array} rules
        */
       removeRules(selector, rules) {
         if (!this.$rules[selector]) {
@@ -784,7 +784,7 @@
 
       setError(path, message) {
         $errors[path] = message;
-        notify_validation_changes(path);
+        notifyValidationChanges(path);
       },
 
       /**
@@ -808,7 +808,7 @@
 
       setPending(path, status) {
         $pending[path] = !!status;
-        notify_state_changes(path);
+        notifyStateChanges(path);
       },
 
       /**
