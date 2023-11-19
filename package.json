@@ -1,6 +1,6 @@
 {
   "name": "siriusjs-validation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Advanced validation library for browsers and Node. Designed to handle complex validation scenarios and integrate with any UI library like Vue, React etc",
   "main": "src/index.js",
   "scripts": {
